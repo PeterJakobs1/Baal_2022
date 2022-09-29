@@ -25,9 +25,6 @@ const goback = async () => {
 };
 </script>  
 
-
-
-
 <template>
   <ion-page>
     <ion-content>
