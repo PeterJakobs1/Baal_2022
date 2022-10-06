@@ -16,8 +16,6 @@ import { useRouter } from "vue-router";
 
 const router = useRouter();
 
-/* State */
-
 // The user can toggle between login and register mode in the form to show/hide additional fields
 const inRegisterMode = ref(false);
 
@@ -37,6 +35,21 @@ const login = async () => {
     router.replace("/home");
   } catch (error) {
     console.error(error);
+  }
+};
+
+const register = async () => {
+  try {
+    const wasRegistered = await authService.register(
+      userDetails.value.firstName,
+      userDetails.value.email,
+      userDetails.value.password
+    );
+    if (wasRegistered) {
+      await login();
+    }
+  } catch (error) {
+    console.log(error);
   }
 };
 </script>
@@ -82,6 +95,7 @@ const login = async () => {
 
         <ion-button
           v-if="inRegisterMode"
+          @click="register"
           class="button-auth"
           fill="solid"
           color="dark"

@@ -17,7 +17,7 @@ import {
 } from "@ionic/vue";
 
 import { ref } from "vue";
-
+const userAccessToken = localStorage.getItem("auth_token");
 const campingSpots = ref([]);
 
 onIonViewDidEnter(async () => {
@@ -43,13 +43,15 @@ onIonViewDidEnter(async () => {
 });
 </script>
 
+
+
 <template>
   <ion-page>
     <ion-header :translucent="true">
       <ion-toolbar>
         <ion-title>Baal 🏕</ion-title>
         <ion-buttons slot="end">
-          <ion-button @click="addCampingSpot">Add camping spot</ion-button>
+          <ion-button router-link="/new-spot">+</ion-button>
         </ion-buttons>
       </ion-toolbar>
     </ion-header>
@@ -60,7 +62,9 @@ onIonViewDidEnter(async () => {
         :key="spot.id"
         :router-link="'/detail/' + spot.id"
       >
-        <img width="500" height="350" :src="spot.imgUrl" />
+        <img
+          :src="`https://ofacetsw.directus.app/assets/${spot.image.id}?access_token=${userAccessToken}`"
+        />
         <ion-card-header>
           <ion-card-subtitle>{{ spot.hashtags }}</ion-card-subtitle>
           <ion-card-title>{{ spot.title }}</ion-card-title>

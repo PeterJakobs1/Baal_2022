@@ -22,14 +22,21 @@ import {
   IonPage,
   IonTitle,
   IonToolbar,
+  onIonViewDidEnter,
+  IonSpinner,
 } from "@ionic/vue";
+
 import { ref } from "vue";
 import { chatboxOutline } from "ionicons/icons";
 import { useRoute } from "vue-router";
+import { directus } from "@/services/directus.service";
 
 /* State = ref = usestate ish */
 const isModalOpen = ref(false);
 const newCommentText = ref("");
+const isLoadingCampSpot = ref(true);
+
+const userAccessToken = localStorage.getItem("auth_token");
 
 /* Using the route object, we can get data for the user's current route */
 const route = useRoute();
@@ -37,41 +44,42 @@ const route = useRoute();
 /* Retrieve the id parameter from the current route's query string (/detail/:id) */
 const { id } = route.params;
 
-/* "Dummy data" for displaying in the UI until we connect the app to an API */
-const campingSpot = ref({
-  id: 1,
-  title: "Fin plass ved Ulsrudvann",
-  description: "Fant denne da jeg gikk kveldstur rundt vannet",
-  imageURL:
-    "https://www.skiforeningen.no/globalassets/bilder/hege-w/ukens-tur/telttur/telt-nedreblanksjo.jpg?w=1200",
-  hashtags: ["østmarka", "oslo", "nærtur"],
-  location: {
-    latitude: 59.888033,
-    longitude: 10.862266,
-  },
-  comments: [
-    {
-      id: 1,
-      username: "Ola",
-      text: "Flott ved Ulsrud, men ta med drikkevann!",
-    },
-    {
-      id: 2,
-      username: "Kari",
-      text: "Fant en super plass å henge opp hengekøya, ble en god natts søvn 💤",
-    },
-  ],
+const campingSpot = ref(null);
+
+onIonViewDidEnter(() => {
+  fetchCampingSpot();
 });
 
-const addNewComment = () => {
-  campingSpot.value.comments.unshift({
-    id: 3,
-    username: "Bruker",
-    text: newCommentText.value,
-  });
+const fetchCampingSpot = async () => {
+  const response = await directus.graphql.items(`
+    query{
+      camping_spots_by_id(id: ${id}){
+        id,
+        title,
+        description,
+        image{
+          id
+        },
+        user_created{
+          first_name
+        }
+      }
+    }
+  `);
+  if (response.status === 200 && response.data) {
+    campingSpot.value = response.data.camping_spots_by_id;
+    isLoadingCampSpot.value = false;
+  }
+};
 
-  isModalOpen.value = false;
-  newCommentText.value = " ";
+const addNewComment = () => {
+  // campingSpot.value.comments.unshift({
+  //   id: 3,
+  //   username: "Bruker",
+  //   text: newCommentText.value,
+  // });
+  // isModalOpen.value = false;
+  // newCommentText.value = " ";
 };
 </script>
   
@@ -82,7 +90,12 @@ const addNewComment = () => {
         <ion-buttons slot="start">
           <ion-back-button default-href="/"></ion-back-button>
         </ion-buttons>
-        <ion-title>{{ campingSpot.title }} ({{ id }})</ion-title>
+        <ion-title v-if="isLoadingCampSpot">
+          <ion-spinner></ion-spinner>
+        </ion-title>
+        <ion-title v-if="campingSpot"
+          >{{ campingSpot.title }} ({{ id }})</ion-title
+        >
         <ion-buttons slot="end">
           <ion-button @click="isModalOpen = true">
             <ion-icon :icon="chatboxOutline"></ion-icon>
@@ -91,9 +104,12 @@ const addNewComment = () => {
       </ion-toolbar>
     </ion-header>
 
-    <ion-content :fullscreen="true">
+    <ion-content :fullscreen="true" v-if="campingSpot && !isLoadingCampSpot">
       <!-- Hero image section -->
-      <img :alt="campingSpot.title" :src="campingSpot.imageURL" />
+
+      <img
+        :src="`https://ofacetsw.directus.app/assets/${campingSpot.image.id}?access_token=${userAccessToken}`"
+      />
 
       <!-- Hashtag section -->
       <ion-chip
