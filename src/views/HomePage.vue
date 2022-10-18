@@ -4,11 +4,6 @@ import {
   IonContent,
   IonButtons,
   IonButton,
-  IonCardContent,
-  IonCardHeader,
-  IonCardTitle,
-  IonCardSubtitle,
-  IonCard,
   IonHeader,
   IonPage,
   IonTitle,
@@ -17,7 +12,8 @@ import {
 } from "@ionic/vue";
 
 import { ref } from "vue";
-const userAccessToken = localStorage.getItem("auth_token");
+import CampingSpotCard from "@/components/CampingSpotCard.vue";
+
 const campingSpots = ref([]);
 
 onIonViewDidEnter(async () => {
@@ -56,23 +52,17 @@ onIonViewDidEnter(async () => {
       </ion-toolbar>
     </ion-header>
 
+ 
     <ion-content :fullscreen="true">
-      <ion-card
-        v-for="spot in campingSpots"
-        :key="spot.id"
-        :router-link="'/detail/' + spot.id"
-      >
-        <img
-          :src="`https://ofacetsw.directus.app/assets/${spot.image.id}?access_token=${userAccessToken}`"
-        />
-        <ion-card-header>
-          <ion-card-subtitle>{{ spot.hashtags }}</ion-card-subtitle>
-          <ion-card-title>{{ spot.title }}</ion-card-title>
-        </ion-card-header>
-        <ion-card-content>
-          {{ spot.description }}
-        </ion-card-content>
-      </ion-card>
+
+      <ion-refresher slot="fixed" @ionRefresh="refreshCampingSpotsView($event)">
+        <ion-refresher-content></ion-refresher-content>
+      </ion-refresher>
+
+      <camping-spot-card v-for="spot in campingSpots" :key="spot.id" :spot="spot" />
+
     </ion-content>
   </ion-page>
 </template>
+
+

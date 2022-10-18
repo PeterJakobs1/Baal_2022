@@ -18,6 +18,8 @@
     "@capacitor/status-bar": "4.0.1",
     "@directus/sdk": "^10.1.4",
     "@ionic/pwa-elements": "^3.1.1",
+    "@ionic/react": "^6.3.1",
+    "@ionic/react-router": "^6.3.1",
     "@ionic/vue": "^6.0.0",
     "@ionic/vue-router": "^6.0.0",
     "core-js": "^3.6.5",

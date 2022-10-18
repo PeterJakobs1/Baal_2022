@@ -36,7 +36,7 @@ const isModalOpen = ref(false);
 const newCommentText = ref("");
 const isLoadingCampSpot = ref(true);
 
-const userAccessToken = localStorage.getItem("auth_token");
+
 
 /* Using the route object, we can get data for the user's current route */
 const route = useRoute();
@@ -83,7 +83,7 @@ const addNewComment = () => {
 };
 </script>
   
-  <template>
+<template>
   <ion-page>
     <ion-header :translucent="true">
       <ion-toolbar>
@@ -93,9 +93,7 @@ const addNewComment = () => {
         <ion-title v-if="isLoadingCampSpot">
           <ion-spinner></ion-spinner>
         </ion-title>
-        <ion-title v-if="campingSpot"
-          >{{ campingSpot.title }} ({{ id }})</ion-title
-        >
+        <ion-title v-if="campingSpot">{{ campingSpot.title }} ({{ id }})</ion-title>
         <ion-buttons slot="end">
           <ion-button @click="isModalOpen = true">
             <ion-icon :icon="chatboxOutline"></ion-icon>
@@ -106,18 +104,11 @@ const addNewComment = () => {
 
     <ion-content :fullscreen="true" v-if="campingSpot && !isLoadingCampSpot">
       <!-- Hero image section -->
+      <camping-spot-image :image-id="campingSpot.image.id"/>
 
-      <img
-        :src="`https://ofacetsw.directus.app/assets/${campingSpot.image.id}?access_token=${userAccessToken}`"
-      />
-
+    
       <!-- Hashtag section -->
-      <ion-chip
-        v-for="hashtag in campingSpot.hashtags"
-        :key="hashtag"
-        color="tertiary"
-        >#{{ hashtag }}</ion-chip
-      >
+      <ion-chip v-for="hashtag in campingSpot.hashtags" :key="hashtag" color="tertiary">#{{ hashtag }}</ion-chip>
 
       <!-- Camping spot info section -->
       <ion-card>
@@ -138,15 +129,9 @@ const addNewComment = () => {
               <ion-icon :icon="chatboxOutline"></ion-icon>
             </ion-label>
           </ion-list-header>
-          <ion-item
-            v-for="comment in campingSpot.comments"
-            :key="comment.id"
-            lines="none"
-          >
+          <ion-item v-for="comment in campingSpot.comments" :key="comment.id" lines="none">
             <ion-avatar slot="start">
-              <img
-                src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAAAAACH5BAAAAAAALAAAAAABAAEAAAICTAEAOw=="
-              />
+              <img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAAAAACH5BAAAAAAALAAAAAABAAEAAAICTAEAOw==" />
             </ion-avatar>
             <ion-label class="ion-text-wrap">
               <ion-text>
@@ -160,12 +145,8 @@ const addNewComment = () => {
         </ion-list>
       </ion-card>
 
-      <ion-modal
-        :is-open="isModalOpen"
-        :initial-breakpoint="0.25"
-        :breakpoints="[0, 0.25, 0.5, 0.75]"
-        @did-dismiss="isModalOpen = false"
-      >
+      <ion-modal :is-open="isModalOpen" :initial-breakpoint="0.25" :breakpoints="[0, 0.25, 0.5, 0.75]"
+        @did-dismiss="isModalOpen = false">
         <ion-content>
           <ion-item lines="none">
             <ion-label position="floating"> Ny kommentar </ion-label>
