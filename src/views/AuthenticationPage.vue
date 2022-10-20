@@ -76,8 +76,6 @@ const register = async () => {
           ></ion-toggle>
         </ion-item>
 
-        <hr />
-
         <ion-item v-if="inRegisterMode">
           <ion-label class="label-mild" position="floating">Fornavn</ion-label>
           <ion-input v-model="userDetails.firstName"></ion-input>

@@ -81,6 +81,8 @@ const postNewCampSpot = async () => {
       });
       await successToast.present();
     }
+
+    
     isUploadingCampSpot.value = false;
   } catch (error) {
     const errorToast = await toastController.create({
