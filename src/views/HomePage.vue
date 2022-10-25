@@ -14,7 +14,7 @@ import {
 import { ref } from "vue";
 import CampingSpotCard from "@/components/CampingSpotCard.vue";
 
-const campingSpots = ref([]);
+const campingSpots = ref<any[]>([]);
 
 onIonViewDidEnter(async () => {
   const response = await directus.graphql.items(`
@@ -52,7 +52,7 @@ onIonViewDidEnter(async () => {
       </ion-toolbar>
     </ion-header>
 
- 
+
     <ion-content :fullscreen="true">
 
       <ion-refresher slot="fixed" @ionRefresh="refreshCampingSpotsView($event)">
